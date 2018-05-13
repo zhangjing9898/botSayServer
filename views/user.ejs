@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>摄影圈 - 个人信息</title>
+    <link rel="stylesheet" href="css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="css/new.css"/>
+    <link rel="stylesheet" href="css/user.css"/>
+    <link rel="stylesheet" href="css/gallery.css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+</head>
+<body>
+<header>
+    <% include header.ejs %>
+</header>
+<main>
+    <div class="user-container">
+        <div class="personal-integer">
+            <div class="personal-banner"
+                 style="background-image: url(https://s1.tuchong.com/sites/299/2990340/header.jpg?1)">
+                <div class="posRelative personal-banner-info container">
+                    <a href="javascript:;" class="personal-logo-link">
+                        <img src="https://s1.tuchong.com/sites/299/2990340/logo_large.jpg?1">
+                    </a>
+                    <div class="personal-info" id="userInfo">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav class="secondary-nav">
+            <ul class="nav-list">
+                <li class="active" data-index="0">
+                    <a target="_self" href="/user">图文作品</a>
+                </li>
+                <li class="" data-index="1">
+                    <a target="_self" href="/userOtherPage">视频作品</a>
+                </li>
+            </ul>
+        </nav>
+        <div class="gallery" id="galleryArea">
+
+        </div>
+    </div>
+</main>
+<% include footer.ejs %>
+
+<!--前端模板-->
+<script type="text/template" id="UserInfoTemplate">
+        <div>
+            <span class="info-name">{{=dengluming}}</span>
+            <a href="javascript:;" class="follow-btn J-follow-btn btn" data-siteid="2990340" data-userid="3003087"
+               data-isfollow="">
+                关注
+            </a>
+        </div>
+        <ul class="slash-list">
+            <li class="slash-item">{{=address}}</li>
+            <li class="slash-item">
+                <a href="https://tuchong.com/2990340/following/"> 关注 {{=follow}}</a>
+            </li>
+            <li class="slash-item">
+                <a href="https://tuchong.com/2990340/followers/"> 粉丝 {{=follower}} </a>
+            </li>
+        </ul>
+</script>
+
+<!--用户上传的图片 前端模板-->
+<script type="text/template" id="userImgTemplate">
+    <div class="white-panel">
+        <img src="{{=ImgPath}}"/>
+        <h1><a href="#">{{=ImgTitle}}</a></h1>
+        <p>{{=ImgContent}}  <i id="{{=_id}}" onclick="deleteImg(id)" class="glyphicon glyphicon-trash bottom-right"></i></p>
+    </div>
+</script>
+<script type="text/javascript">
+
+    //删除图片
+    function deleteImg(idname) {
+        $.get("/deleteImg",{
+            "deleteid": idname
+        },function (result) {
+            if(result=='1'){
+                alert("删除成功！");
+                window.location.reload();
+            }else{
+                alert("删除失败！");
+            }
+        })
+    }
+
+    //    得到模板函数
+    var compileUserInfo = _.template($("#UserInfoTemplate").html());
+    //ajax服务，获取信息
+    $.ajax({
+        "url": "/userInfoData",
+        "type": "get",
+        "success": function (result) {
+            //result是一个数组
+            //console.log(Array.isArray(result));
+            console.log(result);
+            iterator(0);
+            //迭代器
+            //这里防止ajax异步，必须使用迭代器
+            function iterator(i) {
+                if (i == result.length) {
+                    //在这里书写请求完毕之后做的事情
+                    return;  //不用继续迭代了
+                }
+                console.log(result[i]);
+                //组装模板
+                var htmlstring = compileUserInfo(result[i]);
+                //添加DOM
+                $("#userInfo").html($(htmlstring));
+                iterator(i + 1);
+            }
+        }
+    })
+
+    //显示用户图片
+    //    得到模板函数
+    var compileUserImg = _.template($("#userImgTemplate").html());
+    //ajax服务，获取信息
+    $.ajax({
+        "url": "/showImg",
+        "type": "get",
+        "success": function (result) {
+            //result是一个数组
+            //console.log(Array.isArray(result));
+            console.log(result);
+            iterator(0);
+            //迭代器
+            //这里防止ajax异步，必须使用迭代器
+            function iterator(i) {
+                if (i == result.length) {
+                    //在这里书写请求完毕之后做的事情
+                    return;  //不用继续迭代了
+                }
+                console.log(result[i]);
+                //组装模板
+                let htmlstring = compileUserImg(result[i]);
+                //添加DOM
+                $("#galleryArea").append($(htmlstring));
+                iterator(i + 1);
+            }
+        }
+    })
+
+</script>
+</body>
+</html>

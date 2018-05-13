@@ -1,0 +1,110 @@
+<!DOCTYPE html5>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>上传照片</title>
+    <link rel="stylesheet" href="css/uploadImg.css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</head>
+<body>
+<%include header.ejs%>
+<main>
+    <div class="content">
+        <form  action="/upImg" method="post" enctype="multipart/form-data" >
+        <div class="main-zone">
+            <a class="import-from-album icon-add lable-add">
+                <i class="glyphicon glyphicon-file"></i>	从本地选择图片
+            </a>
+
+                <div class="form-group">
+                    <ul class="photo-list">
+                        <li class="upload-item">
+                            <div class="upload-photo">
+                                <i class="glyphicon glyphicon-plus" style="font-size: 36px;"></i>
+                                <p>最大支持20MB的JPEG格式照片<br>不建议加画框和水印签名</p>
+                            </div>
+                            <input type="file" class="file-input"  id="touxiang" name="touxiang" multiple accept="image/jpeg,image/jpg">
+                        </li>
+                    </ul>
+                    <div id="result">
+                        <div id="inResult">
+                            <div id="inImgs"></div>
+                            <div id="imgInfo"></div>
+                        </div>
+                    </div>
+                </div>
+                <!--<input type="submit" class="publish-btn" value="发布">-->
+
+        </div>
+        <aside class="aside-zone">
+            <!--<form  action="/upImg" method="post" enctype="multipart/form-data">-->
+                <label>标题</label>
+                <input type="text" class="m-input" name="title" id="title" value="" autofocus autocomplete="off">
+                <label>作品描述</label>
+                <textarea class="m-input" id="content" name="content" placeholder="说说你的拍摄经历..."></textarea>
+                <div class="widget-taginput">
+                    <label>标签<em>（输入标签内容回车即可添加标签）</em></label>
+                    <span class="tags-count">0/10</span>
+                    <div class="tags-wrap m-input">
+                        <input type="text"  id="tagInput"  name="tagInput" class="tag-input">
+                    </div>
+                    <label>常用标签</label>
+                    <div class="tags-mine">
+                    </div>
+                    <label>推荐标签</label>
+                    <div class="tags-recommend">
+                        <a class="tag-item">人像</a>
+                        <a class="tag-item">风光</a>
+                        <a class="tag-item">街拍</a>
+                        <a class="tag-item">城市</a>
+                        <a class="tag-item">旅行</a>
+                        <a class="tag-item">纪实</a>
+                        <a class="tag-item">色彩</a>
+                        <a class="tag-item">手机</a>
+                        <a class="tag-item">黑白</a>
+                        <a class="tag-item">胶片</a>
+                        <a class="tag-item">抓拍</a>
+                    </div>
+                </div>
+                <input type="submit" class="publish-btn" value="发布">
+            <!--</form>-->
+        </aside>
+        </form>
+    </div>
+
+</main>
+<%include footer.ejs%>
+<script type="text/javascript">
+    var result = document.getElementById("result");
+    var input = document.getElementById("touxiang");
+    var inResult = document.getElementById('inResult');
+
+    if(typeof FileReader === 'undefined'){
+        result.innerHTML = "抱歉，你的浏览器不支持 FileReader";
+        input.setAttribute('disabled','disabled');
+    }else{
+        input.addEventListener('change',readFile,false);
+    }
+    function readFile(){
+        var file = this.files[0];
+        var fsize = parseInt((file.size)/1024); //计算图片大小，默认是B，转换成KB
+        if(!/image\/\w+/.test(file.type)){
+            alert("请确保文件为图像类型");
+            return false;
+        }
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = function(e){
+            inImgs.innerHTML = '<img src="'+this.result+'" alt="" width="198px" height="250px" id="img"/>'; //显示图片
+            var arr = input.value.split('\\'); //分割图片路径
+            document.getElementById('result').style.display="block";
+            document.getElementById('txtImgSrc').value = arr[arr.length-1]; //取数组最后部分 - 图片名字.jpg
+            document.getElementById('imgInfo').innerHTML = arr[arr.length-1]+"<br/>("+fsize+"kb)"; //显示图片名字加图片大小
+        }
+    }
+</script>
+</body>
+</html>
