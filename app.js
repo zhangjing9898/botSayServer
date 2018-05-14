@@ -1,7 +1,6 @@
 var express = require("express");
 var app = express();
 var router = require("./router/router.js");
-
 var session = require('express-session');
 
 //使用session
@@ -23,6 +22,8 @@ app.use(cors());
 //路由表
 app.get("/markWord",router.markWord);       //标记单词
 app.get("/readWord",router.readWord);       //读取单词
-app.get("/postInfo",router.postInfo);
+app.get("/testreadWord",router.testReadWord);
+
+
 
 app.listen(3000);

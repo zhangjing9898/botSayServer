@@ -35,7 +35,7 @@ function init(){
                     console.log(err);
                     return;
                 }
-                console.log("索引建立成功");
+                console.log("数据库初始化成功！");
             }
         );
     });
